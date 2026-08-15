@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Start the $500 test — Robinhood copy-trade</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💵</text></svg>">
+<style>
+:root{
+  --bg:#0b0e14; --panel:#121722; --panel2:#161d2b; --line:#243044; --line2:#2f3d55;
+  --ink:#e8edf7; --ink2:#a7b4cb; --ink3:#7688a3;
+  --accent:#4ade80; --accent2:#38bdf8; --warn:#fbbf24; --bad:#f87171;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--accent2)}
+code,.mono{font-family:var(--mono)}
+
+/* ---------- shell ---------- */
+.wrap{width:100%;padding:0 clamp(16px,3vw,48px)}
+header.top{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#111725,#0b0e14);padding:34px 0 30px}
+.hrow{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-end;justify-content:space-between}
+h1{font-size:clamp(28px,3.4vw,44px);line-height:1.1;margin:0 0 10px;letter-spacing:-.02em}
+h1 span{color:var(--accent)}
+.sub{color:var(--ink2);font-size:18px;max-width:75ch;margin:0}
+.stamp{font:12px/1.5 var(--mono);color:var(--ink3);text-align:right;white-space:nowrap}
+.stamp b{color:var(--ink2);font-weight:600}
+
+/* ---------- money bar ---------- */
+.money{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:26px 0 0}
+.m{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.m .k{font:11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+.m .v{font:700 26px/1.2 var(--sans);margin:8px 0 4px}
+.m .d{font-size:13.5px;color:var(--ink2);line-height:1.45}
+.m.green .v{color:var(--accent)} .m.blue .v{color:var(--accent2)} .m.warn .v{color:var(--warn)}
+
+/* ---------- layout ---------- */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:34px;align-items:start;padding:38px 0 70px}
+@media(max-width:1180px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- steps ---------- */
+.step{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:0 0 18px;overflow:hidden}
+.step>.hd{display:flex;gap:16px;align-items:baseline;padding:20px 24px 0}
+.num{flex:0 0 auto;width:38px;height:38px;border-radius:10px;background:var(--panel2);border:1px solid var(--line2);
+     display:grid;place-items:center;font:700 17px/1 var(--mono);color:var(--accent);align-self:center}
+.step h2{font-size:21px;margin:0;letter-spacing:-.01em}
+.who{margin-left:auto;font:11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+     padding:6px 10px;border-radius:999px;border:1px solid var(--line2);color:var(--ink3);white-space:nowrap}
+.who.you{color:var(--accent);border-color:#1f4d34;background:#0f2318}
+.who.me{color:var(--accent2);border-color:#1c4258;background:#0d1e28}
+.step .bd{padding:14px 24px 24px 78px}
+@media(max-width:640px){.step .bd{padding-left:24px}}
+.step p{margin:0 0 12px}
+.step ul,.step ol{margin:0 0 12px;padding-left:22px}
+.step li{margin:0 0 8px}
+
+/* ---------- bits ---------- */
+.kv{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:15px}
+.kv td{border-bottom:1px solid var(--line);padding:9px 10px;vertical-align:top}
+.kv tr:last-child td{border-bottom:0}
+.kv td:first-child{color:var(--ink2);width:190px;white-space:nowrap}
+.kv td:last-child{font-family:var(--mono);font-size:13.5px;word-break:break-all}
+.copy{cursor:pointer;background:var(--panel2);border:1px solid var(--line2);color:var(--ink2);
+      border-radius:6px;font:11px/1 var(--mono);padding:5px 8px;margin-left:8px;vertical-align:middle}
+.copy:hover{color:var(--ink);border-color:var(--accent)}
+.copy.done{color:var(--accent);border-color:var(--accent)}
+.note{border-left:3px solid var(--line2);background:var(--panel2);padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:15.5px;color:var(--ink2)}
+.note.warn{border-left-color:var(--warn)} .note.warn b{color:var(--warn)}
+.note.bad{border-left-color:var(--bad)} .note.bad b{color:var(--bad)}
+.note.good{border-left-color:var(--accent)} .note.good b{color:var(--accent)}
+.note b{color:var(--ink)}
+
+/* ---------- side ---------- */
+aside{position:sticky;top:20px;display:grid;gap:18px}
+@media(max-width:1180px){aside{position:static}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+.card h3{margin:0 0 14px;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);font-family:var(--mono);font-weight:600}
+.rules{list-style:none;margin:0;padding:0;font-size:15.5px}
+.rules li{padding:11px 0;border-bottom:1px solid var(--line);display:flex;gap:12px}
+.rules li:last-child{border-bottom:0}
+.rules .t{color:var(--accent);font-family:var(--mono);flex:0 0 auto}
+
+table.data{width:100%;border-collapse:collapse;font-size:14.5px;margin:4px 0 0}
+table.data th{text-align:left;font:11px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);border-bottom:1px solid var(--line2);padding:0 8px 9px 0;font-weight:600}
+table.data td{padding:9px 8px 9px 0;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:13.5px}
+table.data tr:last-child td{border-bottom:0}
+table.data td.n{text-align:right}
+.pos{color:var(--accent)} .neg{color:var(--bad)} .dim{color:var(--ink3)}
+.pick{background:#0f2318}
+
+.scroller{overflow-x:auto}
+footer{border-top:1px solid var(--line);padding:26px 0 60px;color:var(--ink3);font-size:14px}
+h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
+.chip{display:inline-block;font:11px/1 var(--mono);padding:5px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--ink2);margin:0 6px 6px 0}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <div class="hrow">
+    <div>
+      <h1>Start the <span>$500</span> test</h1>
+      <p class="sub">A plumbing test, not a profit test. The one thing $500 buys is proof that we can
+      see a wallet buy, buy the same coin at roughly the modelled price, and sell it again — with real
+      money, real gas and real delay. It cannot tell us whether the edge is real. Nothing here needs code.</p>
+    </div>
+    <div class="stamp">
+      numbers read live off the running engine<br>
+      <b>2026-08-15 · block 37,469,901</b><br>
+      Robinhood Chain · id 4663
+    </div>
+  </div>
+
+  <div class="money">
+    <div class="m green"><div class="k">You put in</div><div class="v">$500</div>
+      <div class="d">One-time. This is the whole budget — there is no step where you add more.</div></div>
+    <div class="m blue"><div class="k">Per trade</div><div class="v">$75</div>
+      <div class="d">6 trades running at once, maximum. $75 × 6 = $450, leaving room.</div></div>
+    <div class="m"><div class="k">Kept for gas</div><div class="v">$10</div>
+      <div class="d">A swap costs about <b>$0.02</b>. $10 covers hundreds of them.</div></div>
+    <div class="m warn"><div class="k">Expect to lose</div><div class="v">up to all of it</div>
+      <div class="d">These are memecoins. Budget it like a course fee, not an investment.</div></div>
+  </div>
+</div></header>
+
+<div class="wrap"><div class="grid">
+
+<main>
+
+<div class="step">
+  <div class="hd"><div class="num">1</div><h2>Make a brand-new wallet</h2><div class="who you">you · 5 min</div></div>
+  <div class="bd">
+    <p>Install <a href="https://metamask.io/" target="_blank" rel="noopener">MetaMask</a> (browser extension or phone app) and create a <b>new</b> wallet — not one you already use for anything else.</p>
+    <p>Write the 12 words on paper. Not in a photo, not in a note, not in a chat.</p>
+    <div class="note warn"><b>Why a fresh one:</b> you will be approving swaps on brand-new memecoin
+    contracts all day. If one of them is malicious, it can only ever reach what is inside this wallet.
+    Keep that at $500.</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="hd"><div class="num">2</div><h2>Add the Robinhood Chain network</h2><div class="who you">you · 2 min</div></div>
+  <div class="bd">
+    <p>In MetaMask: <i>Settings → Networks → Add network → Add manually</i>, then type these in exactly.</p>
+    <table class="kv">
+      <tr><td>Network name</td><td>Robinhood Chain</td></tr>
+      <tr><td>RPC URL</td><td><span id="c1">https://rpc.mainnet.chain.robinhood.com</span><button class="copy" data-c="c1">copy</button></td></tr>
+      <tr><td>Chain ID</td><td><span id="c2">4663</span><button class="copy" data-c="c2">copy</button></td></tr>
+      <tr><td>Currency symbol</td><td>ETH</td></tr>
+      <tr><td>Block explorer</td><td><span id="c3">https://robinhoodchain.blockscout.com</span><button class="copy" data-c="c3">copy</button></td></tr>
+    </table>
+    <div class="note warn"><b>Check the Chain ID says 4663</b> before you send anything. That is the one
+    field a fake network page cannot fake without you noticing. I verified this against Robinhood's own
+    docs and by calling the node directly today — it answered <code>0x1237</code>, which is 4663.</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="hd"><div class="num">3</div><h2>Get the $500 onto the chain</h2><div class="who you">you · 20 min</div></div>
+  <div class="bd">
+    <p>There is no way to deposit directly. Money has to be <b>bridged</b> in from another chain. Three moves:</p>
+    <ol>
+      <li>Buy <b>$500 of ETH</b> on whatever exchange you normally use.</li>
+      <li>Withdraw it to your new MetaMask address — choose the <b>Arbitrum</b> or <b>Base</b> network on the withdrawal screen if offered, because withdrawing on Ethereum mainnet can cost $5–20 in fees on its own.</li>
+      <li>Bridge it across at <a href="https://relay.link/bridge/robinhood" target="_blank" rel="noopener">relay.link/bridge/robinhood</a> — pick Robinhood Chain as the destination. Robinhood's own documentation lists Relay as one of two bridges that settle in <b>seconds</b>.</li>
+    </ol>
+    <div class="note warn"><b>Send a small test first.</b> Bridge <b>$20</b>, check it lands, then bridge
+    the rest. A wrong address or wrong network on the first try costs you the whole $500, and there is
+    nobody to call.</div>
+    <div class="note"><b>Gas is ETH here</b>, and it is absurdly cheap — the network was charging
+    <b>0.028 gwei</b> when I checked, which works out at about <b>2 cents a swap</b>. You do not need
+    to think about gas again after this step.</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="hd"><div class="num">4</div><h2>Turn most of it into USDG</h2><div class="who you">you · 5 min</div></div>
+  <div class="bd">
+    <p>Go to <a href="https://app.uniswap.org/" target="_blank" rel="noopener">app.uniswap.org</a>, connect the wallet, make sure the network selector says <b>Robinhood Chain</b>, and swap <b>$490 of your ETH into USDG</b>. Leave about <b>$10 of ETH</b> alone — that is your gas.</p>
+    <table class="kv">
+      <tr><td>USDG token address</td><td><span id="c4">0x5fc5360d0400a0fd4f2af552add042d716f1d168</span><button class="copy" data-c="c4">copy</button></td></tr>
+      <tr><td>What it is</td><td>"Global Dollar" — a dollar stablecoin, 6 decimals</td></tr>
+    </table>
+    <div class="note bad"><b>Paste that address; never pick USDG from a search box.</b> There is a fake
+    USDG on this chain that gets airdropped into wallets to catch exactly this. Our own decoder had to
+    be taught to whitelist the real one by address.</div>
+    <div class="note"><b>Why USDG and not ETH:</b> I counted the pools our tracked coins actually trade
+    in — <b>71 of them price in USDG against 23 in WETH</b>. Holding USDG means one hop to the coin
+    instead of two, so less slippage on every single trade.</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="hd"><div class="num">5</div><h2>Decide which wallets you are copying — this is the real decision</h2><div class="who me">me + you</div></div>
+  <div class="bd">
+    <p>I told you last time to copy the two wallets carrying the biggest profits. <b>Checking it properly
+    today, one of those two is wrong for a manual test</b>, for two separate reasons. Here is the whole
+    board, with the open positions marked to market instead of only the closed ones:</p>
+    <div class="scroller">
+    <table class="data">
+      <thead><tr><th>wallet</th><th class="n">buys / day</th><th class="n">positions</th><th class="n">net P&amp;L</th><th class="n">per position</th><th>verdict</th></tr></thead>
+      <tbody>
+        <tr class="pick"><td>0xf18e3093…</td><td class="n">2.6</td><td class="n">11</td><td class="n pos">+$9,258</td><td class="n pos">+$842</td><td>✅ <b>copy this one</b></td></tr>
+        <tr class="pick"><td>0xd5ff53f4…</td><td class="n">1.5</td><td class="n">4</td><td class="n pos">+$1,821</td><td class="n pos">+$455</td><td>✅ add if you want more</td></tr>
+        <tr class="pick"><td>0x43e2f709…</td><td class="n">2.6</td><td class="n">4</td><td class="n pos">+$1,450</td><td class="n pos">+$363</td><td>✅ add if you want more</td></tr>
+        <tr><td>0x5dcbfc18…</td><td class="n">6.9</td><td class="n">9</td><td class="n pos">+$3,683</td><td class="n pos">+$409</td><td class="dim">borderline — 7 a day</td></tr>
+        <tr><td>0xf154977e…</td><td class="n neg">53.3</td><td class="n">48</td><td class="n pos">+$9,702</td><td class="n">+$202</td><td class="neg">❌ do not copy by hand</td></tr>
+        <tr><td>0xfe8e9273…</td><td class="n neg">15.6</td><td class="n">32</td><td class="n pos">+$5,834</td><td class="n">+$182</td><td class="neg">❌ too fast, too thin</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note bad"><b>Why 0xf154977e is out.</b> It is not a trader, it is a bot: <b>746 buys in
+    13 days across 57 coins, nearly all at the same $376 size</b>. You cannot follow 53 buys a day by
+    hand, and you should not want to — its profit per position is the <b>worst</b> of the shortlist.</div>
+    <div class="note warn"><b>And the headline number shrank.</b> Its "+$22,163" was <i>realised</i> profit
+    only. It also has <b>36 positions still open sitting at −$11,885</b>, so the honest figure is
+    <b>+$9,702</b>. The winners get closed at 3× and the losers just sit there, which flatters every
+    realised number — including the book's. Same correction applies book-wide: <b>+$46,318 realised
+    becomes +$26,007</b> once the open positions are marked.</div>
+    <p><b>The pick: copy <span class="mono">0xf18e30936b6144b36cac59913d43eafc71f255ec</span></b>
+      <button class="copy" data-c="w1">copy</button><span id="w1" hidden>0xf18e30936b6144b36cac59913d43eafc71f255ec</span>
+      — about 2 new coins a day, and by far the best result per position.</p>
+    <div class="note"><b>Say it out loud so it stays honest:</b> that is <b>11 positions</b>. Eleven. Four
+    of them won. A run like that happens by luck often enough that it proves nothing — which is exactly
+    why we are spending $500 to test the pipes and not $5,000 to chase the return.</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="hd"><div class="num">6</div><h2>Get the alert on your phone</h2><div class="who me">me · I do this</div></div>
+  <div class="bd">
+    <p>The tracker already watches all 58 wallets and already sends Telegram alerts — it has been
+    running non-stop since 7 August. What it does <b>not</b> do is alert only on your chosen wallets,
+    which is what you need so your phone is not buzzing 50 times a day.</p>
+    <p>On your go I will add a second, filtered alert that fires only for the wallets in step 5, and
+    only the <b>first</b> time each one buys a coin. I will add it alongside the existing alert, not
+    replace it — the current one keeps running untouched.</p>
+    <div class="note good"><b>Until then</b> you can watch the live panel yourself:
+    <a href="https://melvingoodman7507.github.io/wallet-radar/" target="_blank" rel="noopener">melvingoodman7507.github.io/wallet-radar</a>
+    — the feed is newest-first and updates every few seconds.</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="hd"><div class="num">7</div><h2>When an alert fires, buy</h2><div class="who you">you · 3 min per trade</div></div>
+  <div class="bd">
+    <ol>
+      <li>The alert gives you a <b>token address</b>. Copy it.</li>
+      <li>Open <a href="https://app.uniswap.org/" target="_blank" rel="noopener">app.uniswap.org</a>, network <b>Robinhood Chain</b>, sell <b>USDG</b>, paste the token address in the buy box.</li>
+      <li>Amount: <b>$75</b>. Always $75. Do not size up because one feels good.</li>
+      <li>Set slippage to <b>3%</b>. If the screen warns the price impact is above 3%, <b>skip the trade</b> — that coin is too thin and it is the one rule that has saved this model money.</li>
+      <li>Swap. It confirms in a second or two.</li>
+    </ol>
+    <div class="note good"><b>Good news you can actually rely on: being slow barely costs you.</b> We
+    measured the price 30 s, 60 s, 3 min, 5 min and 10 min after each of 48 real wallet buys. The typical
+    extra cost of arriving <b>ten minutes late is under 1%</b> — and it is no worse at 10 minutes than at
+    30 seconds. You do not have to race anyone.</div>
+    <div class="note warn"><b>The catch:</b> that is the <i>typical</i> case. The spread widens a lot the
+    longer you wait — at ten minutes, one trade in ten was 17% cheaper and one in ten was 15% dearer. So
+    inside an hour is fine; skip it entirely if you are half a day late.</div>
+    <div class="note"><b>If you are asleep, you are asleep.</b> Signals land at every hour of the day —
+    there is no quiet window. Just skip the ones you miss and write down that you skipped them.</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="hd"><div class="num">8</div><h2>Selling — three rules, no judgement</h2><div class="who you">you</div></div>
+  <div class="bd">
+    <p>Whichever of these happens first:</p>
+    <ul>
+      <li><b>The wallet sells.</b> You sell too, the same day you see it. This is how <b>79 of 107</b> paper positions ended.</li>
+      <li><b>You are up 3×.</b> Sell the lot. That is the rule the paper book runs on, and 12 of its trades ended this way.</li>
+      <li><b>Four days pass.</b> Sell regardless. 16 positions hit this — the wallet simply never sold, and the money was better used elsewhere.</li>
+    </ul>
+    <div class="note warn"><b>The one honestly untested part of this whole plan.</b> We measured how much
+    a late <i>buy</i> costs. The same measurement for <b>selling never ran</b> — the file has zero sell
+    samples. So how much a late exit costs you is <b>unknown</b>. Treat the sell alert as the urgent one
+    and the buy alert as the relaxed one, which is the opposite of what feels natural.</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="hd"><div class="num">9</div><h2>Write down every single trade</h2><div class="who you">you · 1 min per trade</div></div>
+  <div class="bd">
+    <p><b>This log is the actual product of the $500.</b> Not the profit — the log. It is the only way to
+    answer the question the test exists to answer: <i>did the real fill match the modelled fill?</i></p>
+    <div class="scroller">
+    <table class="data">
+      <thead><tr><th>date/time</th><th>coin</th><th>wallet price</th><th>your price</th><th>$ in</th><th>sold at</th><th>why you sold</th><th>skipped?</th></tr></thead>
+      <tbody>
+        <tr><td class="dim">15 Aug 21:07</td><td class="dim">PACK</td><td class="dim">0.00041</td><td class="dim">0.00042</td><td class="dim">75</td><td class="dim">—</td><td class="dim">still open</td><td class="dim">no</td></tr>
+        <tr><td class="dim">15 Aug 22:14</td><td class="dim">WISHBONE</td><td class="dim">—</td><td class="dim">—</td><td class="dim">0</td><td class="dim">—</td><td class="dim">—</td><td class="dim">asleep</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="margin-top:12px">A notes app is fine. <b>Log the skips too</b> — if we only see the trades
+    you took, we will read the result as better than it was.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="hd"><div class="num">10</div><h2>Know how it ends before it starts</h2><div class="who you">you</div></div>
+  <div class="bd">
+    <p>Write these two lines down now, while nothing is at stake:</p>
+    <ul>
+      <li><b>Stop at 15 completed trades</b>, whatever the P&amp;L. Then we compare your 15 real fills against the same 15 in the paper book.</li>
+      <li><b>Or stop if the $500 becomes $300.</b> Not "review" — stop.</li>
+    </ul>
+    <div class="note"><b>What a normal run looks like:</b> about 2 signals a day, so 15 trades takes
+    roughly <b>a week and a half</b>. Expect a flat or red first week even if this works perfectly —
+    only <b>1 trade in 8</b> doubles, and the median trade is a small loss. The profit lives entirely in
+    the rare big winners, so a stretch of small losses is the normal texture of it, not a failure.</div>
+    <div class="note bad"><b>The single rule that matters most:</b> when the $500 is gone, it is gone. No
+    top-up, not once. The whole value of this test is that it has a fixed, known, survivable cost.</div>
+  </div>
+</div>
+
+<h2 class="sec">What this test can and cannot prove</h2>
+<div class="step"><div class="bd" style="padding-left:24px;padding-top:22px">
+  <p><b>It can prove:</b> that we can see a buy, act on it, get a fill near the modelled price, and get
+  out again — with real money and a real human in the loop. It also produces the first real number for
+  something the model currently guesses at: the gap between the modelled fill and yours.</p>
+  <p><b>It cannot prove there is an edge</b>, and it is worth being blunt about why. With 6 slots and
+  a couple of signals a day, you will take some signals and skip others, and which you skip depends on
+  when you were awake — that is not a sample anyone can draw a conclusion from. The paper book itself is
+  still unproven: <b>+$26,007 net on 170 positions</b>, the control-arm test came back
+  <b>p = 0.076</b> on 8 positions versus 44, and the median trade <i>loses</i> money. Right shape,
+  never significant — the same shape arbforge died in.</p>
+  <p><b>The real proof still to come</b> is the control arm re-run on the full 107-trade book, which is
+  a computer job, costs nothing, and I can start whenever you say. Your $500 answers a different and
+  smaller question, and it is worth answering — just not the big one.</p>
+</div></div>
+
+</main>
+
+<aside>
+  <div class="card">
+    <h3>The rules, on one card</h3>
+    <ul class="rules">
+      <li><span class="t">$500</span><span>Total. Never topped up.</span></li>
+      <li><span class="t">$75</span><span>Every trade, same size.</span></li>
+      <li><span class="t">6</span><span>Open positions at most.</span></li>
+      <li><span class="t">1</span><span>Position per coin, first buy only.</span></li>
+      <li><span class="t">3%</span><span>Slippage. Higher impact = skip it.</span></li>
+      <li><span class="t">3×</span><span>Take profit and sell the lot.</span></li>
+      <li><span class="t">4d</span><span>Hard exit if nothing happened.</span></li>
+      <li><span class="t">15</span><span>Trades, then stop and compare.</span></li>
+      <li><span class="t">$300</span><span>Floor. Hit it and stop.</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Cost of being late (measured)</h3>
+    <table class="data">
+      <thead><tr><th>you are late by</th><th class="n">typical cost</th><th class="n">worst 1 in 10</th></tr></thead>
+      <tbody>
+        <tr><td>30 seconds</td><td class="n">0.93%</td><td class="n">6.0%</td></tr>
+        <tr><td>1 minute</td><td class="n">0.69%</td><td class="n">7.7%</td></tr>
+        <tr><td>3 minutes</td><td class="n">0.78%</td><td class="n">7.5%</td></tr>
+        <tr><td>5 minutes</td><td class="n">0.66%</td><td class="n">10.3%</td></tr>
+        <tr><td>10 minutes</td><td class="n">0.92%</td><td class="n">15.4%</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:13.5px;color:var(--ink3);margin:12px 0 0">48 real wallet buys, replayed from the
+    chain. Typical cost stays flat as you get later — it is the <i>spread</i> that grows. Selling was
+    never measured.</p>
+  </div>
+
+  <div class="card">
+    <h3>What the paper book says</h3>
+    <table class="data">
+      <tbody>
+        <tr><td>Realised</td><td class="n pos">+$46,318</td></tr>
+        <tr><td>Open, marked</td><td class="n neg">−$20,311</td></tr>
+        <tr><td><b>Net</b></td><td class="n pos"><b>+$26,007</b></td></tr>
+        <tr><td>Closed trades</td><td class="n">107</td></tr>
+        <tr><td>Winners</td><td class="n">50 (47%)</td></tr>
+        <tr><td>Median trade</td><td class="n neg">−$3.10</td></tr>
+        <tr><td>Trades that doubled</td><td class="n">13 (1 in 8)</td></tr>
+        <tr><td>Control arm</td><td class="n">p = 0.076</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:13.5px;color:var(--ink3);margin:12px 0 0">On a $100,000 paper bankroll. Not real money — no live order has ever been placed.</p>
+  </div>
+
+  <div class="card">
+    <h3>Where the exits came from</h3>
+    <table class="data">
+      <tbody>
+        <tr><td>Wallet sold out</td><td class="n">79</td></tr>
+        <tr><td>Timed out at 4 days</td><td class="n">16</td></tr>
+        <tr><td>Took profit at 3×</td><td class="n">12</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:13.5px;color:var(--ink3);margin:12px 0 0">Median position lived <b>4 hours</b>;
+    43% closed inside the first hour. The winners are the slow ones — they lived <b>23 hours</b>.</p>
+  </div>
+</aside>
+
+</div></div>
+
+<footer><div class="wrap">
+  <span class="chip">chain id 4663 · verified live</span>
+  <span class="chip">gas 0.028 gwei ≈ $0.02/swap</span>
+  <span class="chip">USDG 71 pools · WETH 23</span>
+  <span class="chip">engine up since 7 Aug</span>
+  <p style="margin:14px 0 0;max-width:90ch">Network details confirmed against
+  <a href="https://docs.robinhood.com/chain/connecting" target="_blank" rel="noopener">Robinhood's connection docs</a> and
+  <a href="https://docs.robinhood.com/chain/bridging/" target="_blank" rel="noopener">bridging docs</a>, and by calling the
+  public node directly on 15 August 2026. Wallet, price, depth and latency figures are read from the
+  running tracker in <code>/root/workspace/cloudbit-goldmine/tracker</code>. Trading memecoins with $500
+  can lose $500.</p>
+</div></footer>
+
+<script>
+document.querySelectorAll('.copy').forEach(function(b){
+  b.addEventListener('click', function(){
+    var el = document.getElementById(b.dataset.c);
+    if(!el) return;
+    var txt = el.textContent.trim();
+    var done = function(){ b.textContent='copied'; b.classList.add('done');
+      setTimeout(function(){ b.textContent='copy'; b.classList.remove('done'); }, 1400); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done, function(){ fallback(txt, done); });
+    } else { fallback(txt, done); }
+  });
+});
+function fallback(txt, cb){
+  var ta = document.createElement('textarea');
+  ta.value = txt; ta.setAttribute('readonly','');
+  ta.style.position='fixed'; ta.style.top='-1000px';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); cb(); } catch(e) {}
+  document.body.removeChild(ta);
+}
+</script>
+</body>
+</html>
