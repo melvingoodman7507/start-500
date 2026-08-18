@@ -111,7 +111,7 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
     </div>
     <div class="stamp">
       numbers read live off the running engine<br>
-      <b>2026-08-15 · block 37,469,901</b><br>
+      <b>2026-08-18 · 113 closed / 62 open</b><br>
       Robinhood Chain · id 4663
     </div>
   </div>
@@ -220,8 +220,8 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
     <div class="note warn"><b>And the headline number shrank.</b> Its "+$22,163" was <i>realised</i> profit
     only. It also has <b>36 positions still open sitting at −$11,885</b>, so the honest figure is
     <b>+$9,702</b>. The winners get closed at 3× and the losers just sit there, which flatters every
-    realised number — including the book's. Same correction applies book-wide: <b>+$46,318 realised
-    becomes +$26,007</b> once the open positions are marked.</div>
+    realised number — including the book's. Same correction applies book-wide: <b>+$44,420 realised
+    becomes +$23,387</b> once the open positions are marked.</div>
     <p><b>The pick: copy <span class="mono">0xf18e30936b6144b36cac59913d43eafc71f255ec</span></b>
       <button class="copy" data-c="w1">copy</button><span id="w1" hidden>0xf18e30936b6144b36cac59913d43eafc71f255ec</span>
       — about 2 new coins a day, and by far the best result per position.</p>
@@ -273,10 +273,17 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
   <div class="bd">
     <p>Whichever of these happens first:</p>
     <ul>
-      <li><b>The wallet sells.</b> You sell too, the same day you see it. This is how <b>79 of 107</b> paper positions ended.</li>
+      <li><b>The wallet sells.</b> You sell too, the same day you see it. This is how <b>82 of 113</b> paper positions ended.</li>
       <li><b>You are up 3×.</b> Sell the lot. That is the rule the paper book runs on, and 12 of its trades ended this way.</li>
-      <li><b>Four days pass.</b> Sell regardless. 16 positions hit this — the wallet simply never sold, and the money was better used elsewhere.</li>
+      <li><b>Four days pass.</b> Sell regardless. 19 positions hit this — the wallet simply never sold, and the money was better used elsewhere.</li>
     </ul>
+    <div class="note bad"><b>Found on 18 Aug: the simulator does not actually obey this rule, and you will.</b>
+    Its 4-day exit only fires when another tracked wallet happens to trade that same coin again — so on a
+    coin that goes quiet, which is exactly the coin you want out of, <b>the timer can never fire at all</b>.
+    Right now <b>56 of the 62 open paper positions are past their exit</b>, the oldest by 18 days, holding
+    <b>$53,500 of stake at −$21,097</b>. That is a bug in the paper book, not in this plan — you will sell on
+    day 4 by hand, which is what the rule was always supposed to do.</div>
+
     <div class="note warn"><b>The one honestly untested part of this whole plan.</b> We measured how much
     a late <i>buy</i> costs. The same measurement for <b>selling never ran</b> — the file has zero sell
     samples. So how much a late exit costs you is <b>unknown</b>. Treat the sell alert as the urgent one
@@ -313,7 +320,7 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
     </ul>
     <div class="note"><b>What a normal run looks like:</b> about 2 signals a day, so 15 trades takes
     roughly <b>a week and a half</b>. Expect a flat or red first week even if this works perfectly —
-    only <b>1 trade in 8</b> doubles, and the median trade is a small loss. The profit lives entirely in
+    only <b>1 trade in 9</b> doubles, and the median trade is a small loss. The profit lives entirely in
     the rare big winners, so a stretch of small losses is the normal texture of it, not a failure.</div>
     <div class="note bad"><b>The single rule that matters most:</b> when the $500 is gone, it is gone. No
     top-up, not once. The whole value of this test is that it has a fixed, known, survivable cost.</div>
@@ -328,9 +335,14 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
   <p><b>It cannot prove there is an edge</b>, and it is worth being blunt about why. With 6 slots and
   a couple of signals a day, you will take some signals and skip others, and which you skip depends on
   when you were awake — that is not a sample anyone can draw a conclusion from. The paper book itself is
-  still unproven: <b>+$26,007 net on 170 positions</b>, the control-arm test came back
+  still unproven: <b>+$23,387 net on 175 positions</b>, the control-arm test came back
   <b>p = 0.076</b> on 8 positions versus 44, and the median trade <i>loses</i> money. Right shape,
   never significant — the same shape arbforge died in.</p>
+  <p><b>And one caveat on the book itself, found today:</b> because dead positions cannot exit, losses pile
+  up in the open column while winners leave through the door marked "sold at 3×". That is why the realised
+  number always looks better than the net one, and it is why the honest headline is <b>+$23,387</b> and not
+  <b>+$44,420</b>. Fixing the exit will move the paper number down, not up.</p>
+
   <p><b>The real proof still to come</b> is the control arm re-run on the full 107-trade book, which is
   a computer job, costs nothing, and I can start whenever you say. Your $500 answers a different and
   smaller question, and it is worth answering — just not the big one.</p>
@@ -375,13 +387,13 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
     <h3>What the paper book says</h3>
     <table class="data">
       <tbody>
-        <tr><td>Realised</td><td class="n pos">+$46,318</td></tr>
-        <tr><td>Open, marked</td><td class="n neg">−$20,311</td></tr>
-        <tr><td><b>Net</b></td><td class="n pos"><b>+$26,007</b></td></tr>
-        <tr><td>Closed trades</td><td class="n">107</td></tr>
-        <tr><td>Winners</td><td class="n">50 (47%)</td></tr>
-        <tr><td>Median trade</td><td class="n neg">−$3.10</td></tr>
-        <tr><td>Trades that doubled</td><td class="n">13 (1 in 8)</td></tr>
+        <tr><td>Realised</td><td class="n pos">+$44,420</td></tr>
+        <tr><td>Open, marked</td><td class="n neg">−$21,033</td></tr>
+        <tr><td><b>Net</b></td><td class="n pos"><b>+$23,387</b></td></tr>
+        <tr><td>Closed trades</td><td class="n">113</td></tr>
+        <tr><td>Winners</td><td class="n">50 (44%)</td></tr>
+        <tr><td>Median trade</td><td class="n neg">−$5.60</td></tr>
+        <tr><td>Trades that doubled</td><td class="n">13 (1 in 9)</td></tr>
         <tr><td>Control arm</td><td class="n">p = 0.076</td></tr>
       </tbody>
     </table>
@@ -392,8 +404,8 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
     <h3>Where the exits came from</h3>
     <table class="data">
       <tbody>
-        <tr><td>Wallet sold out</td><td class="n">79</td></tr>
-        <tr><td>Timed out at 4 days</td><td class="n">16</td></tr>
+        <tr><td>Wallet sold out</td><td class="n">82</td></tr>
+        <tr><td>Timed out at 4 days</td><td class="n">19</td></tr>
         <tr><td>Took profit at 3×</td><td class="n">12</td></tr>
       </tbody>
     </table>
