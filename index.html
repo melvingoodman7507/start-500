@@ -383,12 +383,44 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
   measure. The four biggest winners in the entire book (UP <b>+$9,439</b>, BRODIE <b>+$5,403</b>, wire
   <b>+$3,958</b>, BRODIE again <b>+$1,303</b>) were all 3× exits that landed <b>after</b> day 4. A working
   4-day rule cuts every one of them for roughly nothing.</div>
+  <h3 style="font-size:19px;margin:26px 0 12px">So how long should we hold? Here is the answer.</h3>
+  <p>The equity table above confounds two things, so I separated them. For every position that was still
+  alive at age A — the only ones a time limit can touch — I compared exiting then against what actually
+  happened. That isolates the exit decision from the fact that freeing cash funds more trades.</p>
+  <div class="scroller">
+  <table class="data">
+    <thead><tr><th>value of holding on past</th><th class="n">positions</th><th class="n">mean</th><th class="n">median</th><th class="n">with the 4 best removed</th></tr></thead>
+    <tbody>
+      <tr><td>2 days</td><td class="n">76</td><td class="n pos">+$258</td><td class="n">$0</td><td class="n neg">−$3</td></tr>
+      <tr><td>3 days</td><td class="n">71</td><td class="n pos">+$251</td><td class="n">$0</td><td class="n neg">−$32</td></tr>
+      <tr class="pick"><td>4 days — what we run</td><td class="n">71</td><td class="n pos">+$239</td><td class="n">$0</td><td class="n neg">−$39</td></tr>
+      <tr><td>5 days</td><td class="n">67</td><td class="n pos">+$208</td><td class="n">$0</td><td class="n neg">−$96</td></tr>
+      <tr><td>1 week</td><td class="n">56</td><td class="n pos">+$99</td><td class="n">$0</td><td class="n neg">−$66</td></tr>
+      <tr><td>10 days</td><td class="n">47</td><td class="n neg">−$49</td><td class="n">$0</td><td class="n neg">−$51</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note bad"><b>Two columns kill the question.</b> The <b>median is exactly $0 at every single
+  horizon</b> — for the typical position, holding longer changes nothing at all, because the coin simply
+  stops trading. And the entire mean benefit is <b>four trades out of 144</b> (UP, BRODIE, POOLS, YOLO):
+  remove them and holding longer is <b>negative at every horizon tested</b>. There is no holding period in
+  this data. The 22-point spread between "4 days" and "never" is those four trades and nothing else.</div>
+  <div class="note bad"><b>And the reason that question stopped mattering.</b> I re-ran the placebo test on
+  the fixed book — 2,757 events, 1,473 copied buys. Copying these wallets against <b>darts thrown at coins
+  of the same depth, same size, same hold, same moment</b>: <b>+3.93 percentage points, p = 0.313</b>. The
+  most flattering framing available gives <b>z = 1.695</b>. arbforge died at <b>z = 1.69</b>. The harness's
+  own verdict: <b>3 FAIL, 5 UNDERPOWERED, 0 PASS — no arm is a result</b>, and arm A's whole profit is its
+  single best trade (strip it: +$860 → −$483).</div>
+  <div class="note"><b>My answer: leave it at 4 days.</b> Not because 4 days is right — on this sample it
+  is among the worst settings — but because there is no edge for a holding rule to protect, and moving it
+  to "never" to collect +19% would be fitting the dial to four trades. Four days keeps capital cycling,
+  which gathers samples faster, which is the only thing that can actually settle this.</div>
+
   <div class="note bad"><b>And here is why I have not just set it to "never".</b> Picking the horizon that
   back-tests best, on one month of data, where four trades carry the entire result, is precisely the
   overfitting that killed arbforge. The monotonic shape is a real clue, but "hold forever" also parks the
   money: at that setting <b>62 positions stay open and $58,000 sits tied up</b>, which is the exact problem
-  the 4-day rule was introduced to solve on 6 August. <b>This is a real trade-off and it is your call, not
-  a number to maximise.</b></div>
+  the 4-day rule was introduced to solve on 6 August. <b>That trade-off is real, but it is now moot: see the answer above.</b></div>
   <div class="note"><b>What I changed and what I did not.</b> I fixed the rule so it fires on a clock
   instead of waiting for someone to trade the coin, and I gave the alert bot the same burst guard the
   open side already had, so a mass restatement sends one message instead of 142. <b>I did not touch your
