@@ -111,7 +111,7 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
     </div>
     <div class="stamp">
       numbers read live off the running engine<br>
-      <b>2026-08-18 · 113 closed / 62 open</b><br>
+      <b>2026-08-18 · 266 closed / 25 open</b><br>
       Robinhood Chain · id 4663
     </div>
   </div>
@@ -127,6 +127,17 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
       <div class="d">These are memecoins. Budget it like a course fee, not an investment.</div></div>
   </div>
 </div></header>
+
+<div class="wrap" style="padding-top:22px">
+  <div class="note bad" style="border-left-width:4px;font-size:16.5px;margin:0">
+    <b>18 AUGUST — READ THIS FIRST. The book this plan was built on has been restated, and the plan is on hold.</b><br>
+    The 4-day exit rule was broken: it could only fire when another tracked wallet happened to trade the
+    same coin again, so a coin that went quiet could never exit. <b>Fixed today.</b> With the rule actually
+    working, the paper book goes from <b>+$23,387 (+23.39%)</b> to <b>−$2,975 (−2.97%)</b>. The profit was
+    the bug. <b>Nothing on this page is worth $500 until we decide what the holding rule should be</b> —
+    see the horizon table at the bottom. The steps themselves are still correct if you choose to run it.
+  </div>
+</div>
 
 <div class="wrap"><div class="grid">
 
@@ -220,8 +231,8 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
     <div class="note warn"><b>And the headline number shrank.</b> Its "+$22,163" was <i>realised</i> profit
     only. It also has <b>36 positions still open sitting at −$11,885</b>, so the honest figure is
     <b>+$9,702</b>. The winners get closed at 3× and the losers just sit there, which flatters every
-    realised number — including the book's. Same correction applies book-wide: <b>+$44,420 realised
-    becomes +$23,387</b> once the open positions are marked.</div>
+    realised number — including the book's. <b>This turned out to be the whole story:</b> once the broken
+    4-day exit was fixed on 18 Aug, the book-wide figure went from <b>+$23,387 to −$2,975</b>.</div>
     <p><b>The pick: copy <span class="mono">0xf18e30936b6144b36cac59913d43eafc71f255ec</span></b>
       <button class="copy" data-c="w1">copy</button><span id="w1" hidden>0xf18e30936b6144b36cac59913d43eafc71f255ec</span>
       — about 2 new coins a day, and by far the best result per position.</p>
@@ -273,9 +284,9 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
   <div class="bd">
     <p>Whichever of these happens first:</p>
     <ul>
-      <li><b>The wallet sells.</b> You sell too, the same day you see it. This is how <b>82 of 113</b> paper positions ended.</li>
+      <li><b>The wallet sells.</b> You sell too, the same day you see it. This is how <b>115 of 266</b> paper positions ended.</li>
       <li><b>You are up 3×.</b> Sell the lot. That is the rule the paper book runs on, and 12 of its trades ended this way.</li>
-      <li><b>Four days pass.</b> Sell regardless. 19 positions hit this — the wallet simply never sold, and the money was better used elsewhere.</li>
+      <li><b>Four days pass.</b> Sell regardless. 142 positions hit this once the rule actually worked — the wallet simply never sold, and the money was better used elsewhere.</li>
     </ul>
     <div class="note bad"><b>Found on 18 Aug: the simulator does not actually obey this rule, and you will.</b>
     Its 4-day exit only fires when another tracked wallet happens to trade that same coin again — so on a
@@ -335,17 +346,54 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
   <p><b>It cannot prove there is an edge</b>, and it is worth being blunt about why. With 6 slots and
   a couple of signals a day, you will take some signals and skip others, and which you skip depends on
   when you were awake — that is not a sample anyone can draw a conclusion from. The paper book itself is
-  still unproven: <b>+$23,387 net on 175 positions</b>, the control-arm test came back
+  now <b>negative: −$2,975 net on 291 positions</b>, the control-arm test came back
   <b>p = 0.076</b> on 8 positions versus 44, and the median trade <i>loses</i> money. Right shape,
   never significant — the same shape arbforge died in.</p>
   <p><b>And one caveat on the book itself, found today:</b> because dead positions cannot exit, losses pile
   up in the open column while winners leave through the door marked "sold at 3×". That is why the realised
-  number always looks better than the net one, and it is why the honest headline is <b>+$23,387</b> and not
-  <b>+$44,420</b>. Fixing the exit will move the paper number down, not up.</p>
+  number always looks better than the net one. <b>Fixing the exit moved the paper number down, exactly as
+  expected — just much further than expected: +$23,387 to −$2,975.</b></p>
 
   <p><b>The real proof still to come</b> is the control arm re-run on the full 107-trade book, which is
   a computer job, costs nothing, and I can start whenever you say. Your $500 answers a different and
   smaller question, and it is worth answering — just not the big one.</p>
+</div></div>
+
+
+<h2 class="sec">The decision this now hangs on: how long do we hold?</h2>
+<div class="step"><div class="bd" style="padding-left:24px;padding-top:22px">
+  <p>With the exit rule finally working, I ran the same book at every holding horizon. The pinned depth
+  table and ledger were identical across all eight runs — only the time limit changed.</p>
+  <div class="scroller">
+  <table class="data">
+    <thead><tr><th>give up after</th><th class="n">equity</th><th class="n">return</th><th class="n">trades closed</th></tr></thead>
+    <tbody>
+      <tr><td>1 day</td><td class="n">$82,756</td><td class="n neg">−17.24%</td><td class="n">437</td></tr>
+      <tr><td>2 days</td><td class="n">$86,686</td><td class="n neg">−13.31%</td><td class="n">356</td></tr>
+      <tr><td>3 days</td><td class="n">$97,896</td><td class="n neg">−2.10%</td><td class="n">314</td></tr>
+      <tr class="pick"><td><b>4 days — what we run today</b></td><td class="n">$97,025</td><td class="n neg">−2.97%</td><td class="n">266</td></tr>
+      <tr><td>1 week</td><td class="n">$109,560</td><td class="n pos">+9.56%</td><td class="n">180</td></tr>
+      <tr><td>2 weeks</td><td class="n">$118,820</td><td class="n pos">+18.82%</td><td class="n">106</td></tr>
+      <tr><td>never give up</td><td class="n">$119,028</td><td class="n pos">+19.03%</td><td class="n">82</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="note warn"><b>It gets better the longer you hold, all the way out.</b> Which means the
+  4-day rule was not a small mis-setting — the time exit is destroying value at every horizon we can
+  measure. The four biggest winners in the entire book (UP <b>+$9,439</b>, BRODIE <b>+$5,403</b>, wire
+  <b>+$3,958</b>, BRODIE again <b>+$1,303</b>) were all 3× exits that landed <b>after</b> day 4. A working
+  4-day rule cuts every one of them for roughly nothing.</div>
+  <div class="note bad"><b>And here is why I have not just set it to "never".</b> Picking the horizon that
+  back-tests best, on one month of data, where four trades carry the entire result, is precisely the
+  overfitting that killed arbforge. The monotonic shape is a real clue, but "hold forever" also parks the
+  money: at that setting <b>62 positions stay open and $58,000 sits tied up</b>, which is the exact problem
+  the 4-day rule was introduced to solve on 6 August. <b>This is a real trade-off and it is your call, not
+  a number to maximise.</b></div>
+  <div class="note"><b>What I changed and what I did not.</b> I fixed the rule so it fires on a clock
+  instead of waiting for someone to trade the coin, and I gave the alert bot the same burst guard the
+  open side already had, so a mass restatement sends one message instead of 142. <b>I did not touch your
+  production settings</b> — <code>live_config.json</code> still says 96 hours. Changing that is one line
+  and one word from you.</div>
 </div></div>
 
 </main>
@@ -387,13 +435,12 @@ h2.sec{font-size:24px;margin:44px 0 16px;letter-spacing:-.01em}
     <h3>What the paper book says</h3>
     <table class="data">
       <tbody>
-        <tr><td>Realised</td><td class="n pos">+$44,420</td></tr>
-        <tr><td>Open, marked</td><td class="n neg">−$21,033</td></tr>
-        <tr><td><b>Net</b></td><td class="n pos"><b>+$23,387</b></td></tr>
-        <tr><td>Closed trades</td><td class="n">113</td></tr>
-        <tr><td>Winners</td><td class="n">50 (44%)</td></tr>
-        <tr><td>Median trade</td><td class="n neg">−$5.60</td></tr>
-        <tr><td>Trades that doubled</td><td class="n">13 (1 in 9)</td></tr>
+        <tr><td class="dim">Before the fix</td><td class="n dim">+$23,387</td></tr>
+        <tr><td>Realised</td><td class="n neg">−$439</td></tr>
+        <tr><td>Open, marked</td><td class="n neg">−$2,536</td></tr>
+        <tr><td><b>Net</b></td><td class="n neg"><b>−$2,975</b></td></tr>
+        <tr><td>Closed trades</td><td class="n">266</td></tr>
+        <tr><td>Still open</td><td class="n">25</td></tr>
         <tr><td>Control arm</td><td class="n">p = 0.076</td></tr>
       </tbody>
     </table>
